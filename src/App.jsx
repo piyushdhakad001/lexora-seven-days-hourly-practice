@@ -1,7 +1,8 @@
-
+import { useState } from "react";
 
 function App() {
-  
+  const [activeCategory, setActiveCategory] = useState("Overview");
+
   const categories = [
     {
       name: "Collocations",
@@ -75,34 +76,74 @@ function App() {
     },
   ];
 
+  const visibleCategories =
+    activeCategory === "Overview"
+      ? categories
+      : categories.filter((category) => {
+        return (
+          category.name === activeCategory
+        )
+      })
+
   return (
     <main>
       <h1>Hindi Phrase Practice</h1>
 
       <nav>
-
+        <button onClick={() => setActiveCategory("Overview")}>Overview</button>
+        {categories.map((category) => {
+          return (
+            <button key={category.name} onClick={() => setActiveCategory(category.name)}>{category.name}</button>
+          )
+        })}
       </nav>
 
-      {categories.map((category) => (
-        <section key={category.name}>
-          <h2>{category.name}</h2>
+      {activeCategory === "Overview" && (
+        <section>
+          <h3>Overview</h3>
+          <p >
+            All phrases: {" "}
+            {categories.reduce((total, category) => {
+              return (
+                total + category.phrases.length
+              )
+            }, 0)}
+          </p>
 
-          {category.phrases.map((phrase) => (
-            <article className="item" key={phrase.id}>
-              <h3>{phrase.hindi}</h3>
-              <p>{phrase.english}</p>
-
-              <ul>
-                {phrase.examples.map((example, index) => (
-                  <li key={`${phrase.id}-example-${index}`}>{example}</li>
-                ))}
-              </ul>
-            </article>
-          ))}
+          {categories.map((category) => {
+            return (
+              <p key={category.name}>{category.name}: {category.phrases.length} phrases</p>
+            )
+          })}
         </section>
-      ))}
+      )}
+
+      {visibleCategories.map((category) => {
+        return (
+          <section key={category.name}>
+            <h2>{category.name}</h2>
+
+            {category.phrases.map((phrase, index) => {
+              return (
+                <article className="item" key={`${category.name}-phrase-${index}`}>
+                  <h3>{phrase.hindi}</h3>
+                  <p>{phrase.english}</p>
+
+                  <ul>
+                    {phrase.examples.map((example, exampleIndex) => {
+                      return (
+                        <li key={exampleIndex}>{example}</li>
+                      )
+                    })}
+                  </ul>
+                </article>
+              )
+            })}
+          </section>
+        )
+      })}
     </main>
-  );
+  )
 }
 
 export default App;
