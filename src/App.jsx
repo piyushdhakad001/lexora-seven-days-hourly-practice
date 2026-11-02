@@ -2,6 +2,7 @@ import { useState } from "react";
 
 function App() {
   const [activeCategory, setActiveCategory] = useState("Overview");
+  const [searchQuery, setSearchQuery] = useState(" ");
 
   const categories = [
     {
@@ -85,6 +86,33 @@ function App() {
         )
       })
 
+  const filteredCategories = visibleCategories.map((category) => {
+    const matchingPhrases = category.phrases.filter((phrase) => {
+      const searchableText = [
+        phrase.hindi,
+        phrase.english,
+        ...phrase.examples,
+      ]
+        .join(" ")
+        .toLowerCase();
+
+      return (
+        searchableText.includes(searchQuery.trim().toLowerCase())
+      )
+    });
+    return (
+      {
+        ...category,
+        phrases: matchingPhrases,
+      }
+    )
+  })
+    .filter((category) => {
+      return (
+        category.phrases.length > 0
+      )
+    })
+
   return (
     <main>
       <h1>Hindi Phrase Practice</h1>
@@ -97,6 +125,15 @@ function App() {
           )
         })}
       </nav>
+
+      <label htmlFor="phrase-search">Search phrases</label>
+      <input
+        id="phrase-search"
+        type="search"
+        value={searchQuery}
+        onChange={(event) => setSearchQuery(event.target.value)}
+        placeholder="Search in Hindi, English, or examples"
+      />
 
       {activeCategory === "Overview" && (
         <section>
@@ -118,7 +155,11 @@ function App() {
         </section>
       )}
 
-      {visibleCategories.map((category) => {
+      {filteredCategories.length === 0 && (
+        <p>No phrases match your search.</p>
+      )}
+
+      {filteredCategories.map((category) => {
         return (
           <section key={category.name}>
             <h2>{category.name}</h2>
