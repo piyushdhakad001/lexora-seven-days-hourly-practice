@@ -4,6 +4,7 @@ function App() {
   const [activeCategory, setActiveCategory] = useState("Overview");
   const [searchQuery, setSearchQuery] = useState(" ");
 
+  // Data
   const categories = [
     {
       name: "Collocations",
@@ -77,6 +78,7 @@ function App() {
     },
   ];
 
+  // current tab
   const visibleCategories =
     activeCategory === "Overview"
       ? categories
@@ -86,6 +88,7 @@ function App() {
         )
       })
 
+      // Search filter
   const filteredCategories = visibleCategories.map((category) => {
     const matchingPhrases = category.phrases.filter((phrase) => {
       const searchableText = [
@@ -113,6 +116,7 @@ function App() {
       )
     })
 
+    // Render screen
   return (
     <main>
       <h1>Hindi Phrase Practice</h1>
