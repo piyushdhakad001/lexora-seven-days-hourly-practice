@@ -1,10 +1,9 @@
 import { useState } from "react";
-
 function App() {
-  const [activeCategory, setActiveCategory] = useState("Overview");
-  const [searchQuery, setSearchQuery] = useState(" ");
 
-  // Data
+  const [activeCategory, setActiveCategory] = useState("Overview");
+  const [ searchQuery, setSearchQuery ] = useState(" ")
+  
   const categories = [
     {
       name: "Collocations",
@@ -78,17 +77,12 @@ function App() {
     },
   ];
 
-  // current tab
-  const visibleCategories =
-    activeCategory === "Overview"
-      ? categories
-      : categories.filter((category) => {
-        return (
-          category.name === activeCategory
-        )
-      })
+  const visibleCategories = activeCategory === "Overview" ? categories : categories.filter((category) => {
+    return (
+      category.name === activeCategory
+    )
+  })
 
-      // Search filter
   const filteredCategories = visibleCategories.map((category) => {
     const matchingPhrases = category.phrases.filter((phrase) => {
       const searchableText = [
@@ -96,27 +90,25 @@ function App() {
         phrase.english,
         ...phrase.examples,
       ]
-        .join(" ")
-        .toLowerCase();
+      .join(" ")
+      .toLowerCase()
 
       return (
         searchableText.includes(searchQuery.trim().toLowerCase())
       )
-    });
+    })
     return (
       {
         ...category,
         phrases: matchingPhrases,
       }
     )
+  }).filter((category) => {
+    return (
+      category.phrases.length > 0
+    )
   })
-    .filter((category) => {
-      return (
-        category.phrases.length > 0
-      )
-    })
 
-    // Render screen
   return (
     <main>
       <h1>Hindi Phrase Practice</h1>
@@ -130,30 +122,24 @@ function App() {
         })}
       </nav>
 
-      <label htmlFor="phrase-search">Search phrases</label>
-      <input
-        id="phrase-search"
-        type="search"
-        value={searchQuery}
-        onChange={(event) => setSearchQuery(event.target.value)}
-        placeholder="Search in Hindi, English, or examples"
-      />
+      <input type="search" 
+      value={searchQuery}
+      onChange={(event) => setSearchQuery(event.target.value)}/>
 
       {activeCategory === "Overview" && (
         <section>
-          <h3>Overview</h3>
-          <p >
-            All phrases: {" "}
+          <h2>Overview</h2>
+          <p>
+            All phrases : {" "}
             {categories.reduce((total, category) => {
               return (
                 total + category.phrases.length
               )
             }, 0)}
           </p>
-
           {categories.map((category) => {
             return (
-              <p key={category.name}>{category.name}: {category.phrases.length} phrases</p>
+              <p>{category.name} : {category.phrases.length}</p>
             )
           })}
         </section>
@@ -162,18 +148,15 @@ function App() {
       {filteredCategories.length === 0 && (
         <p>No phrases match your search.</p>
       )}
-
       {filteredCategories.map((category) => {
         return (
           <section key={category.name}>
             <h2>{category.name}</h2>
-
             {category.phrases.map((phrase, index) => {
               return (
-                <article className="item" key={`${category.name}-phrase-${index}`}>
+                <article key={`${category.name}-${index}`}>
                   <h3>{phrase.hindi}</h3>
                   <p>{phrase.english}</p>
-
                   <ul>
                     {phrase.examples.map((example, exampleIndex) => {
                       return (
@@ -181,6 +164,10 @@ function App() {
                       )
                     })}
                   </ul>
+
+                    <button>Weak</button>
+                    <button>Semi-Weak</button>
+                    <button>Mastered</button>
                 </article>
               )
             })}
