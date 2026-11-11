@@ -1,0 +1,32 @@
+.mark-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.mark-buttons button {
+  padding: 7px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 7px;
+  background: white;
+  cursor: pointer;
+}
+
+.mark-buttons .weak.active {
+  color: #b4233b;
+  border-color: #b4233b;
+  background: #fff1f2;
+}
+
+.mark-buttons .semi-weak.active {
+  color: #a15c00;
+  border-color: #a15c00;
+  background: #fffbeb;
+}
+
+.mark-buttons .mastered.active {
+  color: #16803c;
+  border-color: #16803c;
+  background: #f0fdf4;
+}

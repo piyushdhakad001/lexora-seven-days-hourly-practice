@@ -1,9 +1,12 @@
 import { useState } from "react";
+import './App.css'
+
 function App() {
 
   const [activeCategory, setActiveCategory] = useState("Overview");
-  const [ searchQuery, setSearchQuery ] = useState(" ")
-  
+  const [searchQuery, setSearchQuery] = useState(" ")
+  const [marks, setMarks] = useState({})
+
   const categories = [
     {
       name: "Collocations",
@@ -90,8 +93,8 @@ function App() {
         phrase.english,
         ...phrase.examples,
       ]
-      .join(" ")
-      .toLowerCase()
+        .join(" ")
+        .toLowerCase()
 
       return (
         searchableText.includes(searchQuery.trim().toLowerCase())
@@ -109,6 +112,16 @@ function App() {
     )
   })
 
+  // mark helper function
+  function markPhrase(selectedPhraseId, mark) {
+    setMarks((previousMarks) => {
+      return {
+        ...previousMarks,
+        [selectedPhraseId] : mark,
+      }
+    })
+  }
+
   return (
     <main>
       <h1>Hindi Phrase Practice</h1>
@@ -122,9 +135,9 @@ function App() {
         })}
       </nav>
 
-      <input type="search" 
-      value={searchQuery}
-      onChange={(event) => setSearchQuery(event.target.value)}/>
+      <input type="search"
+        value={searchQuery}
+        onChange={(event) => setSearchQuery(event.target.value)} />
 
       {activeCategory === "Overview" && (
         <section>
@@ -164,10 +177,14 @@ function App() {
                       )
                     })}
                   </ul>
-
-                    <button>Weak</button>
-                    <button>Semi-Weak</button>
-                    <button>Mastered</button>
+                  <div className="mark-buttons">
+                    <button className={marks[phrase.id] === "weak" ? "weak active" : "weak"}
+                     onClick={() => markPhrase([phrase.id], "weak")}>Weak</button>
+                    <button  className={marks[phrase.id] === "semi-weak" ? "semi-weak active" : "semi-weak"}
+                     onClick={() => markPhrase([phrase.id], "semi-weak")}>Semi-Weak</button>
+                    <button  className={marks[phrase.id] === "mastered" ? "mastered active" : "mastered"}
+                     onClick={() => markPhrase([phrase.id], "mastered")} >Mastered</button>
+                  </div>
                 </article>
               )
             })}
