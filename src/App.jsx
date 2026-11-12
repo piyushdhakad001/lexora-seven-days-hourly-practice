@@ -7,6 +7,7 @@ function App() {
   const [searchQuery, setSearchQuery] = useState(" ")
   const [marks, setMarks] = useState({})
   const [progressFilter, setProgressFilter] = useState("all")
+  const [showAnswer, setShowAnswer] = useState(false);
 
   const categories = [
     {
@@ -116,6 +117,13 @@ function App() {
       category.phrases.length > 0
     )
   })
+  // ---------------------------------------
+  // practice mode 
+  const practicePhrases = filteredCategories.flatMap((category) => {
+    return category.phrases
+  })
+
+  const currentPhrase = practicePhrases[0]
   // -------------------------------------------
   // mark helper function
   function markPhrase(selectedPhraseId, mark) {
@@ -171,45 +179,76 @@ function App() {
           </p>
           {categories.map((category) => {
             return (
-              <p>{category.name} : {category.phrases.length}</p>
+              <p key={category.name}>{category.name} : {category.phrases.length}</p>
             )
           })}
         </section>
       )}
 
-      {filteredCategories.length === 0 && (
-        <p>No phrases match your search.</p>
+      {!currentPhrase ? (
+        <p>No phrases match your filters.</p>
+      ) : (
+        <section className="practice-card">
+          <p>Current phrase</p>
+          <h2>{currentPhrase.hindi}</h2>
+
+          {!showAnswer ? (
+            <div className="reveal-area">
+              <button onClick={() => setShowAnswer(true)}>
+                Show English &amp; Examples
+              </button>
+              <p>Try to recall the phrase first.</p>
+            </div>
+          ) : (
+            <div className="answer-area">
+              <p className="english-answer">{currentPhrase.english}</p>
+              <div className="examples">
+                <p>Examples</p>
+                <ul>
+                  {currentPhrase.examples.map((example, exampleIndex) => {
+                    return (
+                      <li key={exampleIndex}>{example}</li>
+                    )
+                  })}
+                </ul>
+              </div>
+              <button onClick={() => setShowAnswer(false)}>
+                Hide answer
+              </button>
+            </div>
+          )}
+
+          <div className="mark-buttons">
+            <button
+              className={marks[currentPhrase.id] === "weak" ? "weak active" : "weak"}
+              onClick={() => markPhrase(currentPhrase.id, "weak")}
+            >
+              Weak
+            </button>
+
+            <button
+              className={marks[currentPhrase.id] === "semi-weak" ? "semi-weak active" : "semi-weak"}
+              onClick={() => markPhrase(currentPhrase.id, "semi-weak")}
+            >
+              Semi-Weak
+            </button>
+
+            <button
+              className={marks[currentPhrase.id] === "mastered" ? "mastered active" : "mastered"}
+              onClick={() => markPhrase(currentPhrase.id, "mastered")}
+            >
+              Mastered
+            </button>
+          </div>
+
+          <aside>
+            <h3>Practice phrases</h3>
+            {practicePhrases.map((phrase) => (
+              <p key={phrase.id}>{phrase.hindi}</p>
+            ))}
+          </aside>
+        </section>
       )}
-      {filteredCategories.map((category) => {
-        return (
-          <section key={category.name}>
-            <h2>{category.name}</h2>
-            {category.phrases.map((phrase, index) => {
-              return (
-               <article key={phrase.id}>
-                  <h3>{phrase.hindi}</h3>
-                  <p>{phrase.english}</p>
-                  <ul>
-                    {phrase.examples.map((example, exampleIndex) => {
-                      return (
-                        <li key={exampleIndex}>{example}</li>
-                      )
-                    })}
-                  </ul>
-                  <div className="mark-buttons">
-                    <button className={marks[phrase.id] === "weak" ? "weak active" : "weak"}
-                      onClick={() => markPhrase(phrase.id, "weak")}>Weak</button>
-                    <button className={marks[phrase.id] === "semi-weak" ? "semi-weak active" : "semi-weak"}
-                      onClick={() => markPhrase(phrase.id, "semi-weak")}>Semi-Weak</button>
-                    <button className={marks[phrase.id] === "mastered" ? "mastered active" : "mastered"}
-                      onClick={() => markPhrase(phrase.id, "mastered")} >Mastered</button>
-                  </div>
-                </article>
-              )
-            })}
-          </section>
-        )
-      })}
     </main>
   )
 }
