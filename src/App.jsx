@@ -6,6 +6,7 @@ function App() {
   const [activeCategory, setActiveCategory] = useState("Overview");
   const [searchQuery, setSearchQuery] = useState(" ")
   const [marks, setMarks] = useState({})
+  const [progressFilter, setProgressFilter] = useState("all")
 
   const categories = [
     {
@@ -86,6 +87,7 @@ function App() {
     )
   })
 
+  // ---------------------------------------
   const filteredCategories = visibleCategories.map((category) => {
     const matchingPhrases = category.phrases.filter((phrase) => {
       const searchableText = [
@@ -96,9 +98,12 @@ function App() {
         .join(" ")
         .toLowerCase()
 
-      return (
-        searchableText.includes(searchQuery.trim().toLowerCase())
-      )
+
+      const matchesSearch = searchableText.includes(searchQuery.trim().toLowerCase());
+      const matchesProgress = progressFilter === 'all' || marks[phrase.id] === progressFilter;
+
+
+      return matchesSearch && matchesProgress;
     })
     return (
       {
@@ -111,13 +116,13 @@ function App() {
       category.phrases.length > 0
     )
   })
-
+  // -------------------------------------------
   // mark helper function
   function markPhrase(selectedPhraseId, mark) {
     setMarks((previousMarks) => {
       return {
         ...previousMarks,
-        [selectedPhraseId] : mark,
+        [selectedPhraseId]: mark,
       }
     })
   }
@@ -138,6 +143,20 @@ function App() {
       <input type="search"
         value={searchQuery}
         onChange={(event) => setSearchQuery(event.target.value)} />
+      <div className="progress-filters">
+        <button
+          className={progressFilter === "all" ? "selected" : ""}
+          onClick={() => setProgressFilter("all")}>All</button>
+        <button
+          className={progressFilter === "weak" ? "selected" : ""}
+          onClick={() => setProgressFilter("weak")}>Weak only</button>
+        <button
+          className={progressFilter === "semi-weak" ? "selected" : ""}
+          onClick={() => setProgressFilter("semi-weak")}>Semi-weak only</button>
+        <button
+          className={progressFilter === "mastered" ? "selected" : ""}
+          onClick={() => setProgressFilter("mastered")}>Mastered only</button>
+      </div>
 
       {activeCategory === "Overview" && (
         <section>
@@ -167,7 +186,7 @@ function App() {
             <h2>{category.name}</h2>
             {category.phrases.map((phrase, index) => {
               return (
-                <article key={`${category.name}-${index}`}>
+               <article key={phrase.id}>
                   <h3>{phrase.hindi}</h3>
                   <p>{phrase.english}</p>
                   <ul>
@@ -179,11 +198,11 @@ function App() {
                   </ul>
                   <div className="mark-buttons">
                     <button className={marks[phrase.id] === "weak" ? "weak active" : "weak"}
-                     onClick={() => markPhrase([phrase.id], "weak")}>Weak</button>
-                    <button  className={marks[phrase.id] === "semi-weak" ? "semi-weak active" : "semi-weak"}
-                     onClick={() => markPhrase([phrase.id], "semi-weak")}>Semi-Weak</button>
-                    <button  className={marks[phrase.id] === "mastered" ? "mastered active" : "mastered"}
-                     onClick={() => markPhrase([phrase.id], "mastered")} >Mastered</button>
+                      onClick={() => markPhrase(phrase.id, "weak")}>Weak</button>
+                    <button className={marks[phrase.id] === "semi-weak" ? "semi-weak active" : "semi-weak"}
+                      onClick={() => markPhrase(phrase.id, "semi-weak")}>Semi-Weak</button>
+                    <button className={marks[phrase.id] === "mastered" ? "mastered active" : "mastered"}
+                      onClick={() => markPhrase(phrase.id, "mastered")} >Mastered</button>
                   </div>
                 </article>
               )
