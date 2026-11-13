@@ -95,3 +95,32 @@
   margin-bottom: 6px;
   line-height: 1.5;
 }
+
+.list-view {
+  margin-top: 24px;
+  overflow-x: auto;
+}
+
+.list-view table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+.list-view th,
+.list-view td {
+  padding: 10px;
+  border-bottom: 1px solid #e4e7ec;
+  text-align: left;
+  vertical-align: top;
+}
+
+.list-view th {
+  color: #6b7280;
+  font-size: 12px;
+}
+
+.list-view ul {
+  margin: 0;
+  padding-left: 18px;
+}

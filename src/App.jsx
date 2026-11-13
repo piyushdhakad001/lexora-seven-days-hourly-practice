@@ -131,7 +131,7 @@ function App() {
   useEffect(() => {
     setShowAnswer(false)
   }, [currentPhrase?.id])
-  
+
   // -------------------------------------------
   // mark helper function
   function markPhrase(selectedPhraseId, mark) {
@@ -272,9 +272,9 @@ function App() {
           <aside>
             <h3>Practice phrases</h3>
             {practicePhrases.map((phrase, index) => (
-              <button 
-              key={phrase.id}
-              className={index === safeIndex ? "current-phrase" : ""}
+              <button
+                key={phrase.id}
+                className={index === safeIndex ? "current-phrase" : ""}
                 onClick={() => setCurrentIndex(index)}>
                 {phrase.hindi}
               </button>
@@ -282,6 +282,47 @@ function App() {
           </aside>
         </section>
       )}
+
+      <div className="list-view">
+        <h2>All matching phrases</h2>
+
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Hindi</th>
+              <th>English</th>
+              <th>Examples</th>
+              <th>Progress</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {practicePhrases.map((phrase, index) => {
+              return (
+                <tr key={phrase.id}>
+                  <td>{index + 1}</td>
+                  <td>{phrase.hindi}</td>
+                  <td>{phrase.english}</td>
+                  <td>
+                    <ul>
+                      {phrase.examples.slice(0, 2).map((example, exampleIndex) => {
+                        return (
+                          <li key={exampleIndex}>{example}</li>
+                        )
+                      })}
+                      {phrase.examples.length > 2 && (
+                        <li key={`${phrase.id}-more`}>+ {phrase.examples.length - 2} more</li>
+                      )}
+                    </ul>
+                  </td>
+                  <td>{marks[phrase.id] || "Not marked"}</td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      </div>
     </main>
   )
 }
