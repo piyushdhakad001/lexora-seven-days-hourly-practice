@@ -5,7 +5,14 @@ function App() {
 
   const [activeCategory, setActiveCategory] = useState("Overview");
   const [searchQuery, setSearchQuery] = useState(" ")
-  const [marks, setMarks] = useState({})
+  const [marks, setMarks] = useState(() => {
+    try {
+      const savedMarks = localStorage.getItem("hindi-phrase-marks")
+      return savedMarks ? JSON.parse(savedMarks) : {}
+    } catch {
+      return {};
+    }
+  })
   const [progressFilter, setProgressFilter] = useState("all")
   const [showAnswer, setShowAnswer] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -84,6 +91,17 @@ function App() {
     },
   ];
 
+  const allPhrases = categories.flatMap((category) => {
+    return category.phrases
+  })
+
+  const progressCounts = {
+    weak: allPhrases.filter((phrase) => marks[phrase.id] === "weak").length,
+    semiWeak: allPhrases.filter((phrase) => marks[phrase.id] === "semi-weak").length,
+    mastered: allPhrases.filter((phrase) => marks[phrase.id] === "mastered").length,
+
+  }
+
   // -----------------------------------
   const visibleCategories = activeCategory === "Overview" ? categories : categories.filter((category) => {
     return (
@@ -132,6 +150,10 @@ function App() {
   useEffect(() => {
     setShowAnswer(false)
   }, [currentPhrase?.id])
+
+  useEffect(() => {
+    localStorage.setItem("hindi-phrase-marks", JSON.stringify(marks))
+  }, [marks])
 
   // -------------------------------------------
   // mark helper function
@@ -186,8 +208,25 @@ function App() {
 
       {activeCategory === "Overview" && (
         <section>
-          <h2>Overview</h2>
-          <p>
+          <div className="progress-summary">
+            <p>Weak : {progressCounts.weak}</p>
+            <p>Semi-Weak : {progressCounts.semiWeak}</p>
+            <p>Mastered : {progressCounts.mastered}</p>
+          </div>
+          
+
+            {categories.map((category) => {
+              const weak = category.phrases.filter((phrase) => marks[phrase.id] === "weak").length;
+              const semiWeak = category.phrases.filter((phrase) => marks[phrase.id] === "semi-weak").length;
+              const mastered = category.phrases.filter((phrase) => marks[phrase.id] === "mastered").length;
+
+              return (
+                <p>{category.name} : {weak} Weak · {semiWeak} Semi-Weak · {mastered} Mastered</p>
+              )
+            })}
+
+            <button onClick={() => setMarks({})}>Reset Progress</button>
+            <p>
             All phrases : {" "}
             {categories.reduce((total, category) => {
               return (
@@ -294,8 +333,6 @@ function App() {
       )
 )}
    
-
-
 
       {mode === "list" && (
         <div className="list-view">
