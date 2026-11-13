@@ -9,6 +9,7 @@ function App() {
   const [progressFilter, setProgressFilter] = useState("all")
   const [showAnswer, setShowAnswer] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0)
+  const [mode, setMode] = useState("practice")
 
   const categories = [
     {
@@ -143,6 +144,8 @@ function App() {
     })
   }
 
+  // -------------------------------------------
+
   return (
     <main>
       <h1>Hindi Phrase Practice</h1>
@@ -160,6 +163,10 @@ function App() {
         value={searchQuery}
         onChange={(event) => setSearchQuery(event.target.value)} />
 
+      <button onClick={() => setMode(mode === "practice" ? "list" : "practice")}>
+        {mode === "practice" ? "Show list" : "Practice Mode"}
+      </button>
+
       <div className="progress-filters">
         <button
           className={progressFilter === "all" ? "selected" : ""}
@@ -174,6 +181,8 @@ function App() {
           className={progressFilter === "mastered" ? "selected" : ""}
           onClick={() => setProgressFilter("mastered")}>Mastered only</button>
       </div>
+
+
 
       {activeCategory === "Overview" && (
         <section>
@@ -194,7 +203,8 @@ function App() {
         </section>
       )}
 
-      {!currentPhrase ? (
+{mode === "practice" && (
+   !currentPhrase ? (
         <p>No phrases match your filters.</p>
       ) : (
         <section className="practice-card">
@@ -281,48 +291,53 @@ function App() {
             ))}
           </aside>
         </section>
+      )
+)}
+   
+
+
+
+      {mode === "list" && (
+        <div className="list-view">
+          <h2>All matching phrases</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Hindi</th>
+                <th>English</th>
+                <th>Examples</th>
+                <th>Progress</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {practicePhrases.map((phrase, index) => {
+                return (
+                  <tr key={phrase.id}>
+                    <td>{index + 1}</td>
+                    <td>{phrase.hindi}</td>
+                    <td>{phrase.english}</td>
+                    <td>
+                      <ul>
+                        {phrase.examples.slice(0, 2).map((example, exampleIndex) => {
+                          return (
+                            <li key={exampleIndex}>{example}</li>
+                          )
+                        })}
+                        {phrase.examples.length > 2 && (
+                          <li key={`${phrase.id}-more`}>+ {phrase.examples.length - 2} more</li>
+                        )}
+                      </ul>
+                    </td>
+                    <td>{marks[phrase.id] || "Not marked"}</td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
       )}
-
-      <div className="list-view">
-        <h2>All matching phrases</h2>
-
-        <table>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Hindi</th>
-              <th>English</th>
-              <th>Examples</th>
-              <th>Progress</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {practicePhrases.map((phrase, index) => {
-              return (
-                <tr key={phrase.id}>
-                  <td>{index + 1}</td>
-                  <td>{phrase.hindi}</td>
-                  <td>{phrase.english}</td>
-                  <td>
-                    <ul>
-                      {phrase.examples.slice(0, 2).map((example, exampleIndex) => {
-                        return (
-                          <li key={exampleIndex}>{example}</li>
-                        )
-                      })}
-                      {phrase.examples.length > 2 && (
-                        <li key={`${phrase.id}-more`}>+ {phrase.examples.length - 2} more</li>
-                      )}
-                    </ul>
-                  </td>
-                  <td>{marks[phrase.id] || "Not marked"}</td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
-      </div>
     </main>
   )
 }
