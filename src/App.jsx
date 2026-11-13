@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import './App.css'
 
 function App() {
@@ -8,6 +8,7 @@ function App() {
   const [marks, setMarks] = useState({})
   const [progressFilter, setProgressFilter] = useState("all")
   const [showAnswer, setShowAnswer] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0)
 
   const categories = [
     {
@@ -82,6 +83,7 @@ function App() {
     },
   ];
 
+  // -----------------------------------
   const visibleCategories = activeCategory === "Overview" ? categories : categories.filter((category) => {
     return (
       category.name === activeCategory
@@ -123,7 +125,13 @@ function App() {
     return category.phrases
   })
 
-  const currentPhrase = practicePhrases[0]
+  const safeIndex = Math.min(currentIndex, Math.max(practicePhrases.length - 1, 0))
+
+  const currentPhrase = practicePhrases[safeIndex];
+  useEffect(() => {
+    setShowAnswer(false)
+  }, [currentPhrase?.id])
+  
   // -------------------------------------------
   // mark helper function
   function markPhrase(selectedPhraseId, mark) {
@@ -151,6 +159,7 @@ function App() {
       <input type="search"
         value={searchQuery}
         onChange={(event) => setSearchQuery(event.target.value)} />
+
       <div className="progress-filters">
         <button
           className={progressFilter === "all" ? "selected" : ""}
@@ -241,10 +250,34 @@ function App() {
             </button>
           </div>
 
+          <div className="practice-card">
+            <button
+              onClick={() => setCurrentIndex(safeIndex - 1)}
+              disabled={safeIndex === 0}
+            >
+              Previous
+            </button>
+
+            <span>
+              {safeIndex + 1} / {practicePhrases.length}
+            </span>
+
+            <button
+              onClick={() => setCurrentIndex(safeIndex + 1)}
+              disabled={safeIndex === practicePhrases.length - 1}>
+              Next
+            </button>
+          </div>
+
           <aside>
             <h3>Practice phrases</h3>
-            {practicePhrases.map((phrase) => (
-              <p key={phrase.id}>{phrase.hindi}</p>
+            {practicePhrases.map((phrase, index) => (
+              <button 
+              key={phrase.id}
+              className={index === safeIndex ? "current-phrase" : ""}
+                onClick={() => setCurrentIndex(index)}>
+                {phrase.hindi}
+              </button>
             ))}
           </aside>
         </section>
